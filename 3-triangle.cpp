@@ -43,7 +43,7 @@ yanghui_tri::yanghui_tri(/* args */)
     q->data = 0;
     q->back = p;
     q->next = Yanghui.rear;
-    Yanghui.rear->back = q;
+    Yanghui.rear->back = q; //初始化了一个为“1 0”的双向链队
 }
 
 yanghui_tri::~yanghui_tri()
@@ -52,7 +52,7 @@ yanghui_tri::~yanghui_tri()
 
 void yanghui_tri::export_tri(int line)
 {
-    if (line == 1)
+    if (line == 1) //只输出一行时不进行后续操作
     {
         p = Yanghui.front->next;
         while (p->next->next)
@@ -78,7 +78,7 @@ void yanghui_tri::export_tri(int line)
             p->next = Yanghui.rear;
             p->back = Yanghui.rear->back;
             Yanghui.rear->back->next = p;
-            Yanghui.rear->back = p;
+            Yanghui.rear->back = p; //给链队末尾添加“0”
             p = p->back;
             while (p->back)
             {
