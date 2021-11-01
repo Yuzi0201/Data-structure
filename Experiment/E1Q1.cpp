@@ -89,6 +89,32 @@ int main()
     }
     cout << endl;
 
+    cout << "请输入需要删除的数字： ";
+    cin >> a;
+    p = queue;
+    while (p->next)
+    {
+        if (p->next->data == a)
+        {
+            p->next = p->next->next;
+            cout << "删除后的结果为： " << endl;
+            p = queue->next;
+            while (p->next)
+            {
+                cout << p->data << " ";
+                p = p->next;
+            }
+            cout << endl;
+            p = queue->next;
+            break;
+        }
+        p = p->next;
+    }
+    if (!p->next)
+    {
+        cout << "没有这个数字！" << endl;
+    }
+
     E1Q1_bilateral *b = new E1Q1_bilateral;
     E1Q1_bilateral *q = new E1Q1_bilateral;
     b->next = q;
