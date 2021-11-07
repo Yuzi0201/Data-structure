@@ -19,35 +19,44 @@ void create(BinTree *&root, string s, int &i) //创建二叉树
         create(root->Lchild, s, ++i);
         root->Rchild = new BinTree;
         create(root->Rchild, s, ++i);
+        if (root->Rchild->data != '\r') //判断右节点是否为空，若非空，不需要读“）”就可以返回，导致跳回出错，故要在计数器上手动+1
+            ++i;
         break;
     case ',':
     case ')':
+        root->Lchild = nullptr;
+        root->Rchild = nullptr;
+        break;
     case NULL:
-        return;
         break;
     default:
         root->data = s[i];
         create(root, s, ++i);
-        return;
         break;
     }
-    // if (s[i] != '(') //如果不是为终止符号
-    // {
-    //     root->data = data; //设置数据
-    //     cout << "请输入" << data << "的左子树:\n";
-    //     create(root->Lchild); //建立该结点左子树
-    //     cout << "请输入" << data << "的右子树:\n";
-    //     create(root->Rchild); //建立该结点右子树
-    // }
-    // else
-    //     root = NULL;
+}
+
+void outputTree(BinTree *root)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        printf("NULL ");
+        return;
+    }
+    else
+    {
+        printf("%c ", root->data);
+        outputTree(root->Lchild);
+        outputTree(root->Rchild);
+    }
 }
 
 int main()
 {
-    string s = "A(B(D,E(H(J,K(L,M(,N)))))C(F,G(,I)))";
+    string s = "A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
     BinTree *b = new BinTree;
     int i = 0;
     create(b, s, i);
-    cout << 1;
+    outputTree(b);
+    cin >> i;
 }
