@@ -140,6 +140,50 @@ int depth(BinTree *root) //计算二叉树深度
     }
 }
 
+//Q2↓
+void outputTree_preorder(BinTree *root)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        printf("%c ", root->data);
+        outputTree_preorder(root->Lchild);
+        outputTree_preorder(root->Rchild);
+    }
+}
+
+void outputTree_middle(BinTree *root)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        outputTree_middle(root->Lchild);
+        printf("%c ", root->data);
+        outputTree_middle(root->Rchild);
+    }
+}
+
+void outputTree_postorder(BinTree *root)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        outputTree_postorder(root->Lchild);
+        outputTree_postorder(root->Rchild);
+        printf("%c ", root->data);
+    }
+}
+//Q3↓
+
 int main()
 {
     string s = "A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
@@ -160,5 +204,13 @@ int main()
     degree(b, i);
     cout << "树的度为： " << i << endl;
     cout << "树的高度为： " << depth(b) << endl;
-    //Q1结束
+    //Q1结束↑
+    printf("树的先序遍历为: ");
+    outputTree_preorder(b); //前序
+    printf("\n树的中序遍历为: ");
+    outputTree_middle(b); //中序
+    printf("\n树的后序遍历为: ");
+    outputTree_postorder(b); //后序
+    printf("\n");
+    //Q2结束↑
 }
