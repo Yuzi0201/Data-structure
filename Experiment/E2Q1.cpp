@@ -51,12 +51,71 @@ void outputTree(BinTree *root)
     }
 }
 
+void find(char c, BinTree *root)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        if (root->data == c)
+        {
+            printf("%c %c\n", root->Lchild->data, root->Rchild->data);
+            return;
+        }
+        find(c, root->Lchild);
+        find(c, root->Rchild);
+    }
+}
+
+void outputnode(BinTree *root, int &i)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        i++;
+        outputnode(root->Lchild, i);
+        outputnode(root->Rchild, i);
+    }
+}
+
+void outputleafnode(BinTree *root, int &i)
+{
+    if ((!root) || (root->data == '\r'))
+    {
+        return;
+    }
+    else
+    {
+        if (root->data != '\r' && (!root->Lchild) && (!root->Rchild))
+        {
+            i++;
+        }
+
+        outputleafnode(root->Lchild, i);
+        outputleafnode(root->Rchild, i);
+    }
+}
+
 int main()
 {
     string s = "A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
     BinTree *b = new BinTree;
     int i = 0;
     create(b, s, i);
+    printf("该树为：");
     outputTree(b);
+    printf("\nH的左孩子和右孩子分别是： ");
+    find('H', b);
+    i = 0;
+    outputnode(b, i);
+    cout << "节点总数为： " << i << endl;
+    i = 0;
+    outputleafnode(b, i);
+    cout << "叶子节点总数为： " << i << endl;
     cin >> i;
 }
