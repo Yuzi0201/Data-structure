@@ -9,7 +9,7 @@ typedef struct node
     node *next;
 };
 
-typedef struct stuck
+typedef struct stack
 {
     node *top;
     node *bottom;
@@ -18,7 +18,7 @@ typedef struct stuck
 class E1Q2
 {
 public:
-    stuck s;
+    stack s;
     E1Q2(/* args */);
     ~E1Q2();
 };

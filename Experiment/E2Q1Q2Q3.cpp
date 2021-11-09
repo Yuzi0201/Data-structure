@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <stack>
 using namespace std;
 
 struct BinTree
@@ -36,9 +37,19 @@ void create(BinTree *&root, string s, int &i) //创建二叉树
     }
 }
 
+bool IsNullNode(BinTree *node)
+{
+    if (node && node->data != '\r')
+    {
+        return false;
+    }
+    else
+        return true;
+}
+
 void outputTree(BinTree *root)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         printf("NULL ");
         return;
@@ -53,7 +64,7 @@ void outputTree(BinTree *root)
 
 void find(char c, BinTree *root)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -71,7 +82,7 @@ void find(char c, BinTree *root)
 
 void outputnode(BinTree *root, int &i)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -85,7 +96,7 @@ void outputnode(BinTree *root, int &i)
 
 void outputleafnode(BinTree *root, int &i)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -105,7 +116,7 @@ void degree(BinTree *root, int &i) //计算二叉树的度
 {
     if (i == 2)
         return;
-    else if (root != NULL && root->Lchild && root->Rchild)
+    else if (!IsNullNode(root) && root->Lchild && root->Rchild)
     {
         i = 2;
         return;
@@ -127,7 +138,7 @@ void degree(BinTree *root, int &i) //计算二叉树的度
 
 int depth(BinTree *root) //计算二叉树深度
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
         return 0;
     else
     {
@@ -143,7 +154,7 @@ int depth(BinTree *root) //计算二叉树深度
 //Q2↓
 void outputTree_preorder(BinTree *root)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -157,7 +168,7 @@ void outputTree_preorder(BinTree *root)
 
 void outputTree_middle(BinTree *root)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -171,7 +182,7 @@ void outputTree_middle(BinTree *root)
 
 void outputTree_postorder(BinTree *root)
 {
-    if ((!root) || (root->data == '\r'))
+    if (IsNullNode(root))
     {
         return;
     }
@@ -182,6 +193,75 @@ void outputTree_postorder(BinTree *root)
         printf("%c ", root->data);
     }
 }
+
+void outputTree_preorder_without_recursion(BinTree *root)
+{
+    stack<BinTree *> s;
+    BinTree *p = root;
+    while ((!IsNullNode(p)) || !s.empty())
+    {
+        while (!IsNullNode(p))
+        {
+            cout << p->data << " ";
+            s.push(p);
+            p = p->Lchild;
+        }
+        if (!s.empty())
+        {
+            p = s.top();
+            s.pop();
+            p = p->Rchild;
+        }
+    }
+}
+
+void outputTree_middle_without_recursion(BinTree *root) //非递归中序遍历
+{
+    stack<BinTree *> s;
+    BinTree *p = root;
+    while (!IsNullNode(p) || !s.empty())
+    {
+        while (!IsNullNode(p))
+        {
+            s.push(p);
+            p = p->Lchild;
+        }
+        if (!s.empty())
+        {
+            p = s.top();
+            cout << p->data << " ";
+            s.pop();
+            p = p->Rchild;
+        }
+    }
+}
+
+void outputTree_postorder_without_recursion(BinTree *root) //非递归后序遍历
+{
+    stack<BinTree *> s;
+    BinTree *cur;        //当前结点
+    BinTree *pre = NULL; //前一次访问的结点
+    s.push(root);
+    while (!s.empty())
+    {
+        cur = s.top();
+        if ((IsNullNode(cur->Lchild) && IsNullNode(cur->Rchild)) ||
+            (!IsNullNode(pre) && (pre == cur->Lchild || pre == cur->Rchild)))
+        {
+            cout << cur->data << " "; //如果当前结点没有孩子结点或者孩子节点都已被访问过
+            s.pop();
+            pre = cur;
+        }
+        else
+        {
+            if (!IsNullNode(cur->Rchild))
+                s.push(cur->Rchild);
+            if (!IsNullNode(cur->Lchild))
+                s.push(cur->Lchild);
+        }
+    }
+}
+
 //Q3↓
 
 int main()
@@ -205,12 +285,18 @@ int main()
     cout << "树的度为： " << i << endl;
     cout << "树的高度为： " << depth(b) << endl;
     //Q1结束↑
-    printf("树的先序遍历为: ");
+    printf("树的递归先序遍历为  : ");
     outputTree_preorder(b); //前序
-    printf("\n树的中序遍历为: ");
+    printf("\n树的非递归先序遍历为: ");
+    outputTree_preorder_without_recursion(b);
+    printf("\n树的递归中序遍历为  : ");
     outputTree_middle(b); //中序
-    printf("\n树的后序遍历为: ");
+    printf("\n树的非递归中序遍历为: ");
+    outputTree_middle_without_recursion(b);
+    printf("\n树的递归后序遍历为:   ");
     outputTree_postorder(b); //后序
+    printf("\n树的非递归后序遍历为: ");
+    outputTree_postorder_without_recursion(b);
     printf("\n");
     //Q2结束↑
 }
