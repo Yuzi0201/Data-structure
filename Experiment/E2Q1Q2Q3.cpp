@@ -80,6 +80,7 @@ BinTree *find(char c, BinTree *root)
         }
         find(c, root->Lchild);
         find(c, root->Rchild);
+        return p;
     }
 }
 
