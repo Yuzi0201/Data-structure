@@ -7,7 +7,9 @@ struct BinTree
 {
     char data;
     BinTree *Lchild;
+    int Ltag;
     BinTree *Rchild;
+    int Rtag;
 };
 
 void create(BinTree *&root, string s, int &i) //创建二叉树
@@ -62,18 +64,19 @@ void outputTree(BinTree *root)
     }
 }
 
-void find(char c, BinTree *root)
+BinTree *find(char c, BinTree *root)
 {
+    static BinTree *p;
     if (IsNullNode(root))
     {
-        return;
+        return p;
     }
     else
     {
         if (root->data == c)
         {
-            printf("%c %c\n", root->Lchild->data, root->Rchild->data);
-            return;
+            p = root;
+            return p;
         }
         find(c, root->Lchild);
         find(c, root->Rchild);
@@ -264,6 +267,51 @@ void outputTree_postorder_without_recursion(BinTree *root) //非递归后序遍�
 
 //Q3↓
 
+void Seq_Order(BinTree *cur) //中序线索化二叉树
+{
+    static BinTree *pre = nullptr; //用静态变量，使得在递归时pre的值仍然正确，出递归后pre的值应该改变而不是入递归时的值
+    if (IsNullNode(cur))
+    {
+        return;
+    }
+    else
+    {
+        Seq_Order(cur->Lchild);
+        if (IsNullNode(cur->Lchild))
+        { //建立前驱线索
+            cur->Ltag = 1;
+            cur->Lchild = pre;
+        }
+
+        //建立后继线索
+        if ((!IsNullNode(pre)) && (IsNullNode(pre->Rchild)))
+        {
+            pre->Rtag = 1;
+            pre->Rchild = cur;
+        }
+        pre = cur; //在此处更改静态变量的值
+        Seq_Order(cur->Rchild);
+    }
+}
+
+BinTree *return_Precursor(BinTree *root) //寻找节点的前驱
+{
+    BinTree *p = root->Lchild;
+    if (root->Ltag != 1)     //若Ltag为1，则前驱就为左孩子，若不为1，说明有左子树，前驱即为左子树最右边的那一个叶子
+        while (p->Rtag != 1) //若Rtag不为1，则还有右子树，继续向右查，若为1，则已到最右尽头，这个就是要找的前驱
+            p = p->Rchild;
+    return p;
+}
+
+BinTree *return_Successor(BinTree *root) //寻找节点的后继
+{
+    BinTree *p = root->Rchild;
+    if (root->Rtag != 1)     //同理，若Rtag为1，则后继就为右孩子，若不为1，说明有右子树，后继即为右子树最左边的那一个叶子
+        while (p->Ltag != 1) //同理，若Ltag不为1，则还有左子树，继续向左查，若为1，则已到最左尽头，这个就是要找的后继
+            p = p->Lchild;
+    return p;
+}
+
 int main()
 {
     string s = "A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
@@ -272,8 +320,8 @@ int main()
     create(b, s, i);
     printf("该树为：");
     outputTree(b);
-    printf("\nH的左孩子和右孩子分别是： ");
-    find('H', b);
+    BinTree *p = find('H', b);
+    printf("\nH的左孩子和右孩子分别是： %c %c\n", p->Lchild->data, p->Rchild->data);
     i = 0;
     outputnode(b, i);
     cout << "节点总数为： " << i << endl;
@@ -299,4 +347,7 @@ int main()
     outputTree_postorder_without_recursion(b);
     printf("\n");
     //Q2结束↑
+    Seq_Order(b);
+    cout << "根节点A在中序线索化树中的前驱是： " << return_Precursor(find('A', b))->data << endl;
+    cout << "根节点A在中序线索化树中的后继是： " << return_Successor(find('A', b))->data << endl;
 }
