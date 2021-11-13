@@ -9,6 +9,8 @@ typedef struct
     int parent, Lchild, Rchild; //节点的双亲、左右孩子的下标
 } * HuffmanTree, Treenode;
 
+typedef char **HuffmanCode;
+
 void select(HuffmanTree HT, int k, int &s1, int &s2);
 
 void CreateHuffmanTree(HuffmanTree &HT, int Letter_freq[], int n)
@@ -46,7 +48,7 @@ void CreateHuffmanTree(HuffmanTree &HT, int Letter_freq[], int n)
         HT[i].Rchild = s2;
         HT[i].weight = HT[s1].weight + HT[s2].weight; //i权值为左右孩子权值之和
     }
-    HT[m].parent = NULL; //根节点的双亲置空
+    HT[m].parent = 0; //根节点的双亲置空
 }
 
 void writein_freq_to_array(string s, int Letter_freq[], int length, int &n)
@@ -103,6 +105,34 @@ void select(HuffmanTree HT, int k, int &s1, int &s2)
     }
 }
 
+void CreateHuffmanCode(HuffmanTree HT, HuffmanCode &HC, int n)
+{
+    char *cd = new char[n]; //临时存放每个字符编码的数组空间
+    cd[n - 1] = '\0';
+    int start, c, f;
+    for (size_t i = 1; i <= n; i++)
+    {
+        start = n - 1; //开始时指向最后(结束符)
+        c = i;
+        f = HT[i].parent;
+        while (f) //从叶子向上回溯直到根
+        {
+            start--;
+            if (c == HT[f].Lchild) //若c为parent的左孩子，置编码0
+                cd[start] = '0';
+            else //若c为parent的右孩子，置编码1
+                cd[start] = '1';
+            c = f;
+            f = HT[f].parent; //继续向上
+        }
+        HC[i] = new char[n - start]; //为第i节点编码分配空间
+        int j;
+        for (j = 0; start <= n - 1; start++, j++)
+            HC[i][j] = cd[start]; //将临时空间中的内容复制到HC[i]中
+    }
+    delete cd;
+}
+
 int main()
 {
     string s = "The Chinese official said he viewed the Trump Presidency not as an aberration but as the product of a failing political system. This jibes with other accounts. The Chinese leadership believes that the United States, and Western democracies in general, haven't risen to the challenge of a globalized economy, which necessitates big changes in production patterns, as well as major upgrades in education and public infrastructure. In Trump and Trumpism, the Chinese see an inevitable backlash to this failure.";
@@ -125,6 +155,11 @@ int main()
     {
         cout << i << " " << HT[i].weight << " " << HT[i].Lchild << " " << HT[i].Rchild << " " << HT[i].parent << endl;
     }
-
-    cout << 1;
+    HuffmanCode HC = new char *[n + 1];
+    CreateHuffmanCode(HT, HC, n);
+    printf("哈夫曼编码为：\n");
+    for (size_t i = 1; i <= n; i++)
+    {
+        cout << HT[i].c << ": " << HC[i] << endl;
+    }
 }
