@@ -58,6 +58,36 @@ int LocateVex(ALGraph G, int vertex)
             return i;
 }
 
+int FirstAdjVex(ALGraph *G, int v);
+int NextAdjVex(ALGraph *G, int v, int w);
+
+void DFS(ALGraph *G, int v)
+{
+    static bool visited[7] = {false};
+    cout << v;
+    visited[v] = 1;
+    for (int w = FirstAdjVex(G, v); w >= 0; w = NextAdjVex(G, v, w))
+    {
+        if (!visited[w])
+            DFS(G, w);
+    }
+}
+
+int FirstAdjVex(ALGraph *G, int v)
+{
+    return G->vertices[v].firstarc->adjvex;
+}
+
+int NextAdjVex(ALGraph *G, int v, int w)
+{
+    ArcNode *p = G->vertices[v].firstarc;
+    while (p->adjvex != w)
+        p = p->nextarc;
+    if (!p->nextarc)
+        return -1;             //下一条边是空的了
+    return p->nextarc->adjvex; //此时p就是w的节点，返回下一个的序号
+}
+
 int main()
 {
     int verticesData[] = {0, 1, 2, 3, 4, 5, 6};
@@ -77,4 +107,8 @@ int main()
         }
         cout << endl;
     }
+    printf("深度优先遍历为：\n");
+    int v = 0;
+    DFS(G, v);
+    printf("\n广度优先遍历为：\n");
 }
