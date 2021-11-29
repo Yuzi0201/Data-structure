@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 using namespace std;
 
 struct ArcNode //边节点
@@ -61,7 +62,7 @@ int LocateVex(ALGraph G, int vertex)
 int FirstAdjVex(ALGraph *G, int v);
 int NextAdjVex(ALGraph *G, int v, int w);
 
-void DFS(ALGraph *G, int v)
+void DFS(ALGraph *G, int v) //Depth First Search
 {
     static bool visited[7] = {false};
     cout << v;
@@ -88,6 +89,27 @@ int NextAdjVex(ALGraph *G, int v, int w)
     return p->nextarc->adjvex; //此时p就是w的节点，返回下一个的序号
 }
 
+void BFS(ALGraph *G, int v) //Breadth First Search
+{
+    cout << v;
+    static bool visited[7] = {false};
+    visited[v] = true; //第v个（也就是第0个节点已访问）
+    queue<int> q;
+    q.push(v);
+    while (!q.empty())
+    {
+        int u = q.front();
+        q.pop();
+        for (int w = FirstAdjVex(G, u); w >= 0; w = NextAdjVex(G, u, w))
+            if (!visited[w])
+            {
+                cout << w;
+                visited[w] = true;
+                q.push(w);
+            }
+    }
+}
+
 int main()
 {
     int verticesData[] = {0, 1, 2, 3, 4, 5, 6};
@@ -111,4 +133,6 @@ int main()
     int v = 0;
     DFS(G, v);
     printf("\n广度优先遍历为：\n");
+    BFS(G, v);
+    printf("\n最小生成树为：\n");
 }
