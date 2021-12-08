@@ -123,10 +123,12 @@ ArcNode *NextVex(ALGraph *G, int v, int w)
 {
     ArcNode *p = G->vertices[v].firstarc;
     while (p->adjvex != w)
+    {
         p = p->nextarc;
-    if (!p->nextarc)
-        return nullptr; //下一条边是空的了
-    return p->nextarc;  //此时p就是w的节点，返回下一边
+        if (!p->nextarc)
+            return nullptr; //下一条边是空的了
+    }
+    return p->nextarc; //此时p就是w的节点，返回下一边
 }
 
 void InitAndSortEdge(ALGraph *G, Edge e[])
@@ -212,6 +214,68 @@ void MiniSpanTree_Kruskal(ALGraph *G)
     }
 }
 
+int Search_weight(ALGraph *G, int v1, int v2) //查找两点之间的边的权重，若无边返回最大值114514
+{
+    for (ArcNode *v = G->vertices[v1].firstarc; v; v = NextVex(G, v1, v->adjvex))
+    {
+        if (v->adjvex == v2)
+            return v->weight;
+    }
+    return 114514;
+}
+
+void ShortestPath_DIJ(ALGraph *G, int v0)
+{
+    int n = G->vexnum;
+    bool S[n] = {false};                                                 //记录v0到vi是否已被确定最短路径长度
+    int Path[n];                                                         //记录从v0到vi的最短路径上vi的直接前驱顶点序号，初值为：若有弧为v0，否则为-1
+    int D[n] = {114514, 114514, 114514, 114514, 114514, 114514, 114514}; //记录v0到vi当前最短路径的长度
+    for (ArcNode *v = G->vertices[0].firstarc; v; v = NextVex(G, 0, v->adjvex))
+    {
+        D[v->adjvex] = v->weight;
+    }
+    for (size_t i = 0; i < n; i++)
+    {
+        if (D[i] < 114514)
+            Path[i] = 0; //如果vi与v0有弧，则将前驱置为v0
+        else
+            Path[i] = -1; //否则置为-1
+    }
+    S[0] = true; //v0加入S
+    D[0] = 0;    //原点到原点距离为0
+    //↑初始化结束，开始主循环↓
+    for (size_t i = 1; i < n; i++) //对其余n-1个顶点依次进行计算
+    {
+        int v;
+        int w;
+        int min = 114514;
+        for (w = 0; w < n; w++)
+            if (!S[w] && D[w] < min)
+            {
+                v = w;
+                min = D[w]; //选择一条当前最短路径，终点为v
+            }
+        cout << "到" << v << "的最短路径为：" << min << endl;
+        cout << v;
+        int back = v;
+        for (w = Path[v]; w; w = Path[w]) //一直向前检索直到0
+        {
+            cout << " <--" << Search_weight(G, w, back) << "-- " << w;
+            back = w;
+        }
+        cout << " <--" << Search_weight(G, w, back) << "-- 0" << endl;
+        S[v] = true;
+        for (w = 0; w < n; w++) //更新从v0出发到集合V-S上所有的顶点的最短路径长度
+        {
+            if (!S[w] && D[v] + Search_weight(G, v, w) < D[w])
+            {
+                D[w] = D[v] + Search_weight(G, v, w); //更新D[w]
+                Path[w] = v;                          //更新w的前缀为v
+            }
+        }
+    }
+}
+
 int main()
 {
     int verticesData[] = {0, 1, 2, 3, 4, 5, 6};
@@ -238,4 +302,6 @@ int main()
     BFS(G, v);
     printf("\n最小生成树为：\n");
     MiniSpanTree_Kruskal(G);
+    printf("\n0节点到其他节点的最短路径分别为：\n");
+    ShortestPath_DIJ(G, v);
 }
