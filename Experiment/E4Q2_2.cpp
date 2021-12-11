@@ -13,15 +13,14 @@ void Binary_Search(vector<char> data, int result[2])
     while (start <= end)
     {
         mid = (start + end) / 2;
+        result[1]++;
         if (data[mid] < input)
         {
             start = mid + 1;
-            result[1]++;
         }
         else if (data[mid] > input)
         {
             end = mid - 1;
-            result[1]++;
         }
         else
         {
